@@ -26,20 +26,14 @@ function Landing() {
       <header className="top-nav">
         <div className="logo">ciphers</div>
         <nav className="primary-actions">
-          <a href="issuer-app.html" className="nav-chip">
+          <a href="/issuer-app.html" className="nav-chip">
             issuer
           </a>
-          <a href="#workflow" className="nav-chip">
-            workflow
+          <a href="/holder-wallet.html" className="nav-chip">
+            holder wallet
           </a>
-          <a href="#roles" className="nav-chip">
-            roles
-          </a>
-          <a href="#trust" className="nav-chip">
-            trust layer
-          </a>
-          <a href="#cta" className="nav-chip">
-            get started
+          <a href="#recruiters" className="nav-chip">
+            recruiter dashboard
           </a>
         </nav>
       </header>
@@ -55,7 +49,7 @@ function Landing() {
               guesswork.
             </p>
             <div className="cta-group">
-              <a href="#wallet" className="button primary">
+              <a href="/holder-wallet.html" className="button primary">
                 Launch holder wallet
               </a>
               <a href="#workflow" className="button secondary">
@@ -106,7 +100,7 @@ function Landing() {
           <article className="role-card">
             <h3>Issuer console</h3>
             <p>College admins verify learners, mint W3C VCs, and sign with DID keys to guarantee authenticity.</p>
-            <a href="issuer-app.html" className="button tertiary">
+            <a href="/issuer-app.html" className="button tertiary">
               Launch issuer portal
             </a>
           </article>
@@ -115,7 +109,7 @@ function Landing() {
             <p>
               Students decrypt credentials, manage consent, and preserve encrypted CIDs inside a DID-controlled vault.
             </p>
-            <a href="#workflow" className="button tertiary">
+            <a href="/holder-wallet.html" className="button tertiary">
               Manage wallet
             </a>
           </article>
@@ -183,14 +177,14 @@ function Landing() {
           <article className="panel">
             <h3>Deploy issuer instance</h3>
             <p>Spin up decentralized issuance workflows with built-in DID key management and Arweave anchoring.</p>
-            <a className="button tertiary" href="issuer-app.html">
+            <a className="button tertiary" href="/issuer-app.html">
               Start issuing
             </a>
           </article>
           <article className="panel">
             <h3>Empower every learner</h3>
             <p>Offer students an intuitive wallet that keeps credentials encrypted, permanent, and under their control.</p>
-            <a href="#wallet" className="button tertiary">
+            <a href="/holder-wallet.html" className="button tertiary">
               Equip holders
             </a>
           </article>

@@ -9,8 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "ipfs-http-client": "^60.0.1",
     "@tanstack/react-query": "^5.66.9",
+    "ipfs-http-client": "^60.0.1",
+    "qrcode": "^1.5.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "viem": "^2.21.16",
