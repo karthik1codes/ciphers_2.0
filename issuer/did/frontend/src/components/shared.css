@@ -49,6 +49,11 @@
   background: rgba(99, 102, 241, 0.1);
 }
 
+.btn-small {
+  padding: 0.5rem 0.875rem;
+  font-size: 0.8125rem;
+}
+
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;

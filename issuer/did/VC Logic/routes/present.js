@@ -2,13 +2,19 @@
  * Verifiable Presentation Route
  * 
  * POST /present
- * Creates a Verifiable Presentation (VP) with selective disclosure
+ * Creates a Verifiable Presentation (VP) with selective disclosure and predicates
  * 
  * Request body:
  * {
  *   credentialId: string,  // ID of the credential to present
  *   holderDid: string,     // DID of the credential holder
  *   fields: string[]       // List of fields to include (selective disclosure)
+ *   predicates: {           // Optional: Predicate-based filtering
+ *     "fieldName": {
+ *       operator: "gt" | "gte" | "lt" | "lte" | "eq",
+ *       value: number | string
+ *     }
+ *   }
  * }
  * 
  * Returns: { verifiablePresentation: VP JSON }
@@ -41,9 +47,55 @@ const { getCredentialById } = require('../utils/storage');
  * - Transform credential to use BBS+ proof
  * - Create selective disclosure proof for specific fields
  */
+// Helper function to get nested field value from object using dot notation
+function getNestedValue(obj, path) {
+  return path.split('.').reduce((current, key) => current?.[key], obj);
+}
+
+// Helper function to set nested field value in object using dot notation
+function setNestedValue(obj, path, value) {
+  const keys = path.split('.');
+  const lastKey = keys.pop();
+  const target = keys.reduce((current, key) => {
+    if (!current[key]) current[key] = {};
+    return current[key];
+  }, obj);
+  target[lastKey] = value;
+}
+
+// Helper function to evaluate predicate
+function evaluatePredicate(actualValue, operator, predicateValue) {
+  if (actualValue === null || actualValue === undefined) {
+    return false;
+  }
+
+  const actual = typeof actualValue === 'string' && !isNaN(Date.parse(actualValue))
+    ? new Date(actualValue).getTime()
+    : typeof actualValue === 'number' ? actualValue : actualValue;
+  
+  const predicate = typeof predicateValue === 'string' && !isNaN(Date.parse(predicateValue))
+    ? new Date(predicateValue).getTime()
+    : typeof predicateValue === 'number' ? predicateValue : predicateValue;
+
+  switch (operator) {
+    case 'gt':
+      return actual > predicate;
+    case 'gte':
+      return actual >= predicate;
+    case 'lt':
+      return actual < predicate;
+    case 'lte':
+      return actual <= predicate;
+    case 'eq':
+      return actual === predicate || String(actual) === String(predicate);
+    default:
+      return false;
+  }
+}
+
 router.post('/', async (req, res, next) => {
   try {
-    const { credentialId, holderDid, fields } = req.body;
+    const { credentialId, holderDid, fields, predicates } = req.body;
     
     // Validate request
     if (!credentialId || !holderDid) {
@@ -79,26 +131,64 @@ router.post('/', async (req, res, next) => {
     
     console.log(`Creating presentation for credential ${credentialId}...`);
     console.log(`Selective disclosure fields: ${fields ? fields.join(', ') : 'all fields'}`);
+    if (predicates) {
+      console.log(`Predicates: ${JSON.stringify(predicates)}`);
+    }
     
     // MOCK SELECTIVE DISCLOSURE: Filter credentialSubject fields
     // This is NOT zero-knowledge - it's just field filtering
+    // For predicates, we include a status indicator instead of the actual value
     let filteredCredentialSubject = { id: holderDid };
     
+    const credentialSubject = originalCredential.credentialSubject || 
+                             originalCredential.vc?.credentialSubject || {};
+    
     if (fields && Array.isArray(fields) && fields.length > 0) {
-      // Only include requested fields
-      const credentialSubject = originalCredential.credentialSubject || 
-                               originalCredential.vc?.credentialSubject || {};
-      
-      fields.forEach(field => {
-        if (credentialSubject[field] !== undefined) {
-          filteredCredentialSubject[field] = credentialSubject[field];
+      // Process each field
+      fields.forEach(fieldPath => {
+        const actualValue = getNestedValue(credentialSubject, fieldPath);
+        
+        // Check if this field has a predicate
+        if (predicates && predicates[fieldPath]) {
+          const predicate = predicates[fieldPath];
+          const predicateResult = evaluatePredicate(actualValue, predicate.operator, predicate.value);
+          
+          if (!predicateResult) {
+            console.warn(`Predicate validation failed for ${fieldPath}: ${predicate.operator} ${predicate.value}`);
+            return; // Skip this field if predicate fails
+          }
+          
+          // For predicate fields, include a status indicator instead of actual value
+          // In a real ZK implementation, this would be a cryptographic proof
+          const operatorSymbols = {
+            'gt': '>',
+            'gte': '≥',
+            'lt': '<',
+            'lte': '≤',
+            'eq': '='
+          };
+          
+          setNestedValue(filteredCredentialSubject, fieldPath, {
+            predicate: `${operatorSymbols[predicate.operator]} ${predicate.value}`,
+            verified: true,
+            note: 'This is a mock predicate proof. In production, use BBS+ signatures for true zero-knowledge proofs.'
+          });
+        } else {
+          // Regular field inclusion - handle nested paths properly
+          if (actualValue !== undefined) {
+            // If it's a nested path, we need to preserve the structure
+            if (fieldPath.includes('.')) {
+              setNestedValue(filteredCredentialSubject, fieldPath, actualValue);
+            } else {
+              // Simple field
+              filteredCredentialSubject[fieldPath] = actualValue;
+            }
+          }
         }
       });
     } else {
       // Include all fields if no specific fields requested
-      filteredCredentialSubject = originalCredential.credentialSubject || 
-                                  originalCredential.vc?.credentialSubject || 
-                                  { id: holderDid };
+      filteredCredentialSubject = { ...credentialSubject, id: holderDid };
     }
     
     // Build filtered credential for presentation
@@ -121,12 +211,14 @@ router.post('/', async (req, res, next) => {
       proofFormat: 'jwt', // Change to 'lds' for JSON-LD with BBS+
     });
     
-    console.log(`✅ Presentation created (NOTE: This uses mock field filtering, not true ZK proofs)`);
+    console.log(`✅ Presentation created (NOTE: This uses mock field filtering and predicates, not true ZK proofs)`);
     
     res.json({
       verifiablePresentation,
       message: 'Presentation created successfully',
-      note: 'This implementation uses field filtering for selective disclosure. For production, implement BBS+ signatures or ZK proofs.',
+      note: predicates 
+        ? 'This implementation uses field filtering and mock predicates for selective disclosure. For production, implement BBS+ signatures or ZK proofs.'
+        : 'This implementation uses field filtering for selective disclosure. For production, implement BBS+ signatures or ZK proofs.',
     });
   } catch (error) {
     console.error('Error creating presentation:', error);

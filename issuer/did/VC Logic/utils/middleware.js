@@ -93,7 +93,7 @@ function errorHandler(err, req, res, next) {
   res.status(status).json(errorResponse);
 }
 
-module.exports = {
+export {
   requireApiKey,
   validateRequired,
   errorHandler,

@@ -6,6 +6,8 @@ function DIDView() {
   const [did, setDid] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const [didMethod, setDidMethod] = useState('key')
+  const [copySuccess, setCopySuccess] = useState(false)
+  const [didGeneratedAt, setDidGeneratedAt] = useState(null)
 
   // Generate a DID based on the selected method
   const generateDID = async () => {
@@ -40,6 +42,7 @@ function DIDView() {
       }
       
       setDid(generatedDID)
+      setDidGeneratedAt(new Date())
     } catch (error) {
       console.error('Error generating DID:', error)
       alert('Failed to generate DID. Please try again.')
@@ -52,11 +55,12 @@ function DIDView() {
     if (did) {
       navigator.clipboard.writeText(did)
         .then(() => {
-          alert('DID copied to clipboard!')
+          setCopySuccess(true)
+          setTimeout(() => setCopySuccess(false), 2000)
         })
         .catch(err => {
           console.error('Failed to copy:', err)
-          alert('Failed to copy DID')
+          setCopySuccess(false)
         })
     }
   }
@@ -100,7 +104,7 @@ function DIDView() {
                     onClick={copyToClipboard}
                     title="Copy to clipboard"
                   >
-                    📋 Copy
+                    {copySuccess ? '✓ Copied!' : '📋 Copy'}
                   </button>
                   <button 
                     className="btn btn-text btn-small" 
@@ -113,7 +117,9 @@ function DIDView() {
               </div>
               <div className="did-info">
                 <span className="did-method-badge">{didMethod}</span>
-                <span className="did-timestamp">Generated: {new Date().toLocaleString()}</span>
+                <span className="did-timestamp">
+                  Generated: {didGeneratedAt ? didGeneratedAt.toLocaleString() : 'Just now'}
+                </span>
               </div>
             </div>
           ) : (

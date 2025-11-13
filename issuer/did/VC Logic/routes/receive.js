@@ -15,6 +15,7 @@
 const express = require('express');
 const router = express.Router();
 const { saveCredential } = require('../utils/storage');
+const { v4: uuidv4 } = require('uuid');
 
 /**
  * Receive and save a verifiable credential
@@ -45,7 +46,7 @@ router.post('/', async (req, res, next) => {
     let credentialId = vc.id || vc.credential?.id;
     if (!credentialId) {
       // Generate a temporary ID if not present
-      credentialId = `urn:uuid:${require('uuid').v4()}`;
+      credentialId = `urn:uuid:${uuidv4()}`;
       console.log('⚠️  No credential ID found, generating temporary ID');
     }
     

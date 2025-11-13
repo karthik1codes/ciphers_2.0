@@ -6,22 +6,34 @@ import {
   getStorageStats 
 } from '../services/storageService'
 import ReceiveVCModal from './ReceiveVCModal'
+import PresentVCModal from './PresentVCModal'
 import './ReceivedCredentials.css'
 import './shared.css'
 
 function ReceivedCredentials() {
   const [receivedVCs, setReceivedVCs] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isPresentModalOpen, setIsPresentModalOpen] = useState(false)
   const [copiedId, setCopiedId] = useState(null)
   const [expandedVC, setExpandedVC] = useState(null)
   const [storageStats, setStorageStats] = useState(null)
   const [deleteConfirm, setDeleteConfirm] = useState(null)
+  const [credentialStatuses, setCredentialStatuses] = useState({}) // { credentialId: { status: 'active'|'revoked'|'checking'|'error', revokedAt?, reason? } }
+  const [checkingStatuses, setCheckingStatuses] = useState(false)
 
   // Load credentials from storage on mount
   useEffect(() => {
     loadCredentials()
     updateStorageStats()
   }, [])
+
+  // Check credential statuses when credentials change
+  useEffect(() => {
+    if (receivedVCs.length > 0) {
+      checkAllCredentialStatuses()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [receivedVCs.length]) // Only check when count changes, not on every render
 
   const loadCredentials = () => {
     try {
@@ -176,6 +188,7 @@ function ReceivedCredentials() {
       }
     } else {
       setDeleteConfirm(vcId)
+      // Note: In production, store timeoutId in useRef and cleanup in useEffect
       setTimeout(() => setDeleteConfirm(null), 3000)
     }
   }
@@ -213,6 +226,117 @@ function ReceivedCredentials() {
     return vc.type || 'Unknown'
   }
 
+  // Extract credential ID for status check (handle different ID formats)
+  const extractCredentialId = (vc) => {
+    if (!vc.id) return null
+    // If ID is a URL, extract the last part (UUID)
+    if (vc.id.includes('/')) {
+      return vc.id.split('/').pop()
+    }
+    // If ID contains a colon, extract the part after the last colon
+    if (vc.id.includes(':')) {
+      return vc.id.split(':').pop()
+    }
+    return vc.id
+  }
+
+  // Check status for a single credential
+  const checkCredentialStatus = async (vc) => {
+    const credentialId = extractCredentialId(vc)
+    if (!credentialId) return { vcId: vc.id, status: { status: 'unknown', error: 'No credential ID' } }
+
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || ''
+      const response = await fetch(`${API_URL}/status/${credentialId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          // Credential not found in issuer's storage - might be external
+          return { vcId: vc.id, status: { status: 'unknown', error: 'Not found in issuer registry' } }
+        }
+        throw new Error(`Status check failed: ${response.status}`)
+      }
+
+      const data = await response.json()
+      return {
+        vcId: vc.id,
+        status: {
+          status: data.status || 'active',
+          revokedAt: data.revokedAt || null,
+          reason: data.reason || null
+        }
+      }
+    } catch (error) {
+      console.error(`Error checking status for credential ${credentialId}:`, error)
+      return { vcId: vc.id, status: { status: 'error', error: error.message } }
+    }
+  }
+
+  // Check status for all credentials
+  const checkAllCredentialStatuses = async () => {
+    if (checkingStatuses || receivedVCs.length === 0) return
+
+    setCheckingStatuses(true)
+    
+    // Set all to checking state first
+    const initialCheckingStatuses = {}
+    receivedVCs.forEach(vc => {
+      if (vc.id) {
+        initialCheckingStatuses[vc.id] = { status: 'checking' }
+      }
+    })
+    setCredentialStatuses(prev => ({ ...prev, ...initialCheckingStatuses }))
+    
+    try {
+      // Check statuses in parallel
+      const statusPromises = receivedVCs.map(vc => checkCredentialStatus(vc))
+      const results = await Promise.all(statusPromises)
+      
+      // Update statuses
+      const newStatuses = {}
+      results.forEach(({ vcId, status }) => {
+        if (vcId && status) {
+          newStatuses[vcId] = status
+        }
+      })
+
+      setCredentialStatuses(prev => ({ ...prev, ...newStatuses }))
+    } catch (error) {
+      console.error('Error checking credential statuses:', error)
+    } finally {
+      setCheckingStatuses(false)
+    }
+  }
+
+  // Get status for a credential
+  const getCredentialStatus = (vc) => {
+    const status = credentialStatuses[vc.id]
+    if (!status) return { status: 'unknown', display: 'Unknown' }
+    
+    if (status.status === 'checking') {
+      return { status: 'checking', display: 'Checking...' }
+    }
+    
+    if (status.status === 'error') {
+      return { status: 'error', display: 'Error' }
+    }
+    
+    if (status.status === 'revoked') {
+      return { status: 'revoked', display: 'Revoked', revokedAt: status.revokedAt, reason: status.reason }
+    }
+    
+    if (status.status === 'active') {
+      return { status: 'active', display: 'Active' }
+    }
+    
+    return { status: 'unknown', display: 'Unknown' }
+  }
+
   return (
     <section className="received-credentials">
       <div className="received-credentials-card">
@@ -229,6 +353,24 @@ function ReceivedCredentials() {
             <div className="received-credentials-count">
               {receivedVCs.length} {receivedVCs.length === 1 ? 'Credential' : 'Credentials'}
             </div>
+            {receivedVCs.length > 0 && (
+              <>
+                <button 
+                  className="btn btn-text btn-small"
+                  onClick={checkAllCredentialStatuses}
+                  disabled={checkingStatuses}
+                  title="Refresh status"
+                >
+                  {checkingStatuses ? '⏳ Checking...' : '🔄 Refresh Status'}
+                </button>
+                <button 
+                  className="btn btn-secondary btn-small"
+                  onClick={() => setIsPresentModalOpen(true)}
+                >
+                  📤 Present Credential
+                </button>
+              </>
+            )}
             <button 
               className="btn btn-primary btn-small"
               onClick={() => setIsModalOpen(true)}
@@ -256,7 +398,22 @@ function ReceivedCredentials() {
                 <div key={vc.id || index} className="vc-item">
                   <div className="vc-item-header" onClick={() => toggleExpand(index)}>
                     <div className="vc-item-info">
-                      <h3 className="vc-type">{getCredentialType(vc)}</h3>
+                      <div className="vc-type-header">
+                        <h3 className="vc-type">{getCredentialType(vc)}</h3>
+                        {(() => {
+                          const statusInfo = getCredentialStatus(vc)
+                          return (
+                            <span className={`vc-status-badge vc-status-${statusInfo.status}`}>
+                              {statusInfo.status === 'checking' && '⏳'}
+                              {statusInfo.status === 'active' && '✓'}
+                              {statusInfo.status === 'revoked' && '✗'}
+                              {statusInfo.status === 'error' && '⚠'}
+                              {statusInfo.status === 'unknown' && '?'}
+                              <span className="vc-status-text">{statusInfo.display}</span>
+                            </span>
+                          )
+                        })()}
+                      </div>
                       <div className="vc-meta">
                         <span className="vc-issuer">
                           Issuer: {vc.issuer?.name || vc.issuer?.id || 'Unknown'}
@@ -326,6 +483,40 @@ function ReceivedCredentials() {
                             <span className="vc-detail-value">{formatDate(vc.storedAt)}</span>
                           </div>
                         )}
+                        {(() => {
+                          const statusInfo = getCredentialStatus(vc)
+                          if (statusInfo.status === 'revoked') {
+                            return (
+                              <>
+                                <div className="vc-detail-item">
+                                  <label>Status:</label>
+                                  <span className="vc-detail-value vc-status-revoked-text">Revoked</span>
+                                </div>
+                                {statusInfo.revokedAt && (
+                                  <div className="vc-detail-item">
+                                    <label>Revoked At:</label>
+                                    <span className="vc-detail-value">{formatDate(statusInfo.revokedAt)}</span>
+                                  </div>
+                                )}
+                                {statusInfo.reason && (
+                                  <div className="vc-detail-item">
+                                    <label>Revocation Reason:</label>
+                                    <span className="vc-detail-value">{statusInfo.reason}</span>
+                                  </div>
+                                )}
+                              </>
+                            )
+                          }
+                          if (statusInfo.status === 'active') {
+                            return (
+                              <div className="vc-detail-item">
+                                <label>Status:</label>
+                                <span className="vc-detail-value vc-status-active-text">Active</span>
+                              </div>
+                            )
+                          }
+                          return null
+                        })()}
                       </div>
                     </div>
                   )}
@@ -340,6 +531,10 @@ function ReceivedCredentials() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onReceive={handleReceiveVC}
+      />
+      <PresentVCModal
+        isOpen={isPresentModalOpen}
+        onClose={() => setIsPresentModalOpen(false)}
       />
     </section>
   )

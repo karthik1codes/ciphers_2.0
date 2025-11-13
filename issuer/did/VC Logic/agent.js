@@ -12,16 +12,15 @@
  * - Store private keys securely (never in code or .env)
  */
 
-const { createAgent, IAgentOptions, IKeyManager, IDIDManager, ICredentialIssuer, ICredentialVerifier } = require('@veramo/core');
+const { createAgent } = require('@veramo/core');
 const { KeyManager } = require('@veramo/key-manager');
 const { KeyManagementSystem, SecretBox } = require('@veramo/kms-local');
 const { DIDManager } = require('@veramo/did-manager');
 const { EthrDIDProvider } = require('@veramo/did-provider-ethr');
 const { KeyDIDProvider } = require('@veramo/did-provider-key');
-const { CredentialIssuerLD, CredentialIssuer } = require('@veramo/credential-ld');
+const { CredentialIssuerLD } = require('@veramo/credential-ld');
 const { CredentialPlugin } = require('@veramo/credential-w3c');
-const { DataStore, DataStoreORM } = require('@veramo/data-store');
-const { Entities, KeyStore, DIDStore, IDataStore, IDataStoreORM, PrivateKeyStore } = require('@veramo/data-store');
+const { KeyStore, DIDStore, PrivateKeyStore } = require('@veramo/data-store');
 
 // For demo: in-memory key storage with a secret key
 // PRODUCTION: Use proper secret management (AWS Secrets Manager, Vault, etc.)
