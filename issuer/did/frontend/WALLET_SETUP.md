@@ -24,7 +24,7 @@ This will install `wagmi` and `viem`, which power account management and RPC cal
 npm run dev
 ```
 
-Open the dev server URL and navigate either to `index.html` (marketing landing) or `issuer-app.html` (dashboard).
+Open the dev server URL and navigate either to `index.html` (marketing landing) or `issuer.html` (dashboard).
 
 ## Connecting MetaMask
 

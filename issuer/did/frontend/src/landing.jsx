@@ -26,12 +26,12 @@ function Landing() {
       <header className="top-nav">
         <div className="logo">ciphers</div>
         <nav className="primary-actions">
-          <a href="/issuer-app.html" className="nav-chip">
+          <a href="/issuer.html" className="nav-chip">
             issuer
           </a>
-          <a href="/holder-wallet.html" className="nav-chip">
-            holder wallet
-          </a>
+          <a href="/holder-wallet.html" className="nav-chip">holder wallet</a>
+          <a href="/recruiter.html" className="nav-chip">recruiter</a>
+          <a href="/metamask.html" className="nav-chip">metamask</a>
           <a href="#recruiters" className="nav-chip">
             recruiter dashboard
           </a>
@@ -100,7 +100,7 @@ function Landing() {
           <article className="role-card">
             <h3>Issuer console</h3>
             <p>College admins verify learners, mint W3C VCs, and sign with DID keys to guarantee authenticity.</p>
-            <a href="/issuer-app.html" className="button tertiary">
+            <a href="/issuer.html" className="button tertiary">
               Launch issuer portal
             </a>
           </article>
@@ -116,7 +116,7 @@ function Landing() {
           <article className="role-card">
             <h3>Recruiter dashboard</h3>
             <p>Talent teams request selective disclosures, validate proofs, and cross-check CIDs on the permaweb.</p>
-            <a href="#recruiters" className="button tertiary">
+              <a href="/recruiter.html" className="button tertiary">
               Review proofs
             </a>
           </article>
@@ -177,7 +177,7 @@ function Landing() {
           <article className="panel">
             <h3>Deploy issuer instance</h3>
             <p>Spin up decentralized issuance workflows with built-in DID key management and Arweave anchoring.</p>
-            <a className="button tertiary" href="/issuer-app.html">
+            <a className="button tertiary" href="/issuer.html">
               Start issuing
             </a>
           </article>
