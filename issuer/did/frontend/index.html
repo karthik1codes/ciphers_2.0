@@ -3,11 +3,221 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DID Issuer - Credential Management</title>
+    <title>Ciphers Credentials Network</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <div class="global-noise"></div>
+    <header class="top-nav">
+      <div class="logo">ciphers</div>
+      <nav class="primary-actions">
+        <a href="issuer-app.html" class="nav-chip">issuer</a>
+        <a href="#workflow" class="nav-chip">workflow</a>
+        <a href="#roles" class="nav-chip">roles</a>
+        <a href="#trust" class="nav-chip">trust layer</a>
+        <a href="#cta" class="nav-chip">get started</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <span class="eyebrow">Store credentials. Forever.</span>
+          <h1>
+            The decentralized credential layer for issuers, holders, and
+            recruiters.
+          </h1>
+          <p>
+            Ciphers anchors verifiable credentials on Arweave’s permanent
+            storage so every DID connection stays trustless. College admins mint
+            once, students control access, and recruiters verify proofs with
+            zero guesswork.
+          </p>
+          <div class="cta-group">
+            <a href="#wallet" class="button primary">Launch holder wallet</a>
+            <a href="#workflow" class="button secondary"
+              >View decentralized flow</a
+            >
+          </div>
+          <div class="status-strip">
+            <span class="status-pill">Arweave permanence</span>
+            <span class="status-pill">Selective disclosure</span>
+            <span class="status-pill">Zero-knowledge proofs</span>
+          </div>
+        </div>
+        <div class="hero-card">
+          <h2>Credential handshake</h2>
+          <ul>
+            <li>
+              Issuer signs academic records using institution keys and DID auth.
+            </li>
+            <li>
+              Holder encrypts credentials, uploads to Arweave-backed IPFS,
+              stores returned CID.
+            </li>
+            <li>
+              Recruiter receives derived proof, resolves CID, verifies signature
+              instantly.
+            </li>
+          </ul>
+          <a class="card-link" href="#workflow"
+            >See how permanence powers trust →</a
+          >
+        </div>
+      </section>
+
+      <section class="permanence-band" id="trust">
+        <div class="band-copy">
+          <h2>Pay once, trust always.</h2>
+          <p>
+            Arweave’s permaweb keeps credential evidence online without
+            expiring links or centralized servers.
+          </p>
+        </div>
+        <div class="band-metrics">
+          <div>
+            <span class="metric">1x</span>
+            <p>
+              Single upload cost to store encrypted credential archives.
+            </p>
+          </div>
+          <div>
+            <span class="metric">Perma</span>
+            <p>Immutable audit log for every issuance and verification event.</p>
+          </div>
+          <div>
+            <span class="metric">Trustless</span>
+            <p>Recruiters verify proofs without contacting issuers.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="role-panels" id="roles">
+        <article class="role-card">
+          <h3>Issuer console</h3>
+          <p>
+            College admins verify learners, mint W3C VCs, and sign with DID keys
+            to guarantee authenticity.
+          </p>
+          <a href="#issuer" class="button tertiary">Launch issuer portal</a>
+        </article>
+        <article class="role-card highlight" id="wallet">
+          <h3>Holder wallet</h3>
+          <p>
+            Students decrypt credentials, manage consent, and preserve encrypted
+            CIDs inside a DID-controlled vault.
+          </p>
+          <a href="#workflow" class="button tertiary">Manage wallet</a>
+        </article>
+        <article class="role-card">
+          <h3>Recruiter dashboard</h3>
+          <p>
+            Talent teams request selective disclosures, validate proofs, and
+            cross-check CIDs on the permaweb.
+          </p>
+          <a href="#recruiters" class="button tertiary">Review proofs</a>
+        </article>
+      </section>
+
+      <section class="workflow" id="workflow">
+        <div class="section-heading">
+          <h2>Credential lifecycle on the permaweb</h2>
+          <p>
+            From DID creation to recruiter verification, each stage is
+            decentralized, encrypted, and permanent.
+          </p>
+        </div>
+        <div class="workflow-grid">
+          <article class="node" id="issuer">
+            <h3>1. Verify & issue</h3>
+            <p>
+              College admins authenticate students, create verifiable
+              credentials, and sign using institution DIDs. Encrypted payloads
+              are handed to the learner—no centralized copy retained.
+            </p>
+          </article>
+          <article class="node highlight" id="credentials">
+            <h3>2. Anchor to Arweave</h3>
+            <p>
+              Holders encrypt credential files, upload to IPFS with Arweave
+              permanence, and receive the immutable content ID (CID) that backs
+              every future proof.
+            </p>
+          </article>
+          <article class="node">
+            <h3>3. Control disclosure</h3>
+            <p>
+              The wallet derives proofs tailored to recruiter requests, revealing
+              only approved attributes via zero-knowledge proofs.
+            </p>
+          </article>
+          <article class="node" id="recruiters">
+            <h3>4. Instant verification</h3>
+            <p>
+              Recruiters resolve the CID, verify signatures on-chain, and
+              confirm credential integrity without round trips to the issuer.
+            </p>
+          </article>
+          <article class="node">
+            <h3>5. Immutable audit trail</h3>
+            <p>
+              Every issuance, storage, and verification event creates a
+              timestamped record, providing regulators and institutions with
+              end-to-end traceability.
+            </p>
+          </article>
+          <article class="node">
+            <h3>6. Continuous trust</h3>
+            <p>
+              Credentials never expire or vanish, ensuring lifelong recognition
+              of achievements wherever learners share their DID.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="cta-panels" id="cta">
+        <article class="panel">
+          <h3>Deploy issuer instance</h3>
+          <p>
+            Spin up decentralized issuance workflows with built-in DID key
+            management and Arweave anchoring.
+          </p>
+          <a class="button tertiary" href="#issuer">Start issuing</a>
+        </article>
+        <article class="panel">
+          <h3>Empower every learner</h3>
+          <p>
+            Offer students an intuitive wallet that keeps credentials encrypted,
+            permanent, and under their control.
+          </p>
+          <a class="button tertiary" href="#wallet">Equip holders</a>
+        </article>
+        <article class="panel">
+          <h3>Accelerate hiring</h3>
+          <p>
+            Give recruiters verifiable talent insights backed by tamper-proof
+            records sourced from Arweave.
+          </p>
+          <a class="button tertiary" href="#recruiters">Invite recruiters</a>
+        </article>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Powered by decentralized identifiers, selective disclosure, and the Arweave permaweb.</p>
+      <p class="credit">
+        <a href="https://www.arweave.com/" target="_blank" rel="noreferrer"
+          >Discover Arweave permanence</a
+        >
+      </p>
+    </footer>
   </body>
 </html>
 

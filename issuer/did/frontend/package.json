@@ -10,8 +10,11 @@
   },
   "dependencies": {
     "ipfs-http-client": "^60.0.1",
+    "@tanstack/react-query": "^5.66.9",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "viem": "^2.21.16",
+    "wagmi": "^1.4.13"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.1",
