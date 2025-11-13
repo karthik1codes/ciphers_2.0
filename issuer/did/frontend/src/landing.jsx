@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import ReactDOM from 'react-dom/client'
+import SharedHeader from './components/SharedHeader'
 import '../styles.css'
 
 function scrollToHash(hash) {
@@ -23,20 +24,7 @@ function Landing() {
   return (
     <div className="landing-page">
       <div className="global-noise"></div>
-      <header className="top-nav">
-        <div className="logo">ciphers</div>
-        <nav className="primary-actions">
-          <a href="/issuer.html" className="nav-chip">
-            issuer
-          </a>
-          <a href="/holder-wallet.html" className="nav-chip">holder wallet</a>
-          <a href="/recruiter.html" className="nav-chip">recruiter</a>
-          <a href="/metamask.html" className="nav-chip">metamask</a>
-          <a href="#recruiters" className="nav-chip">
-            recruiter dashboard
-          </a>
-        </nav>
-      </header>
+      <SharedHeader activeTab="landing" />
 
       <main>
         <section className="hero">

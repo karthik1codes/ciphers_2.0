@@ -7,23 +7,36 @@
 
 body {
   margin: 0;
-  background: #060712;
-  color: #f3f5ff;
+  background: #070814;
+  color: #f4f5ff;
 }
 
 .holder-wallet {
   position: relative;
   min-height: 100vh;
   padding: 24px clamp(24px, 6vw, 72px) 80px;
+  color: #f4f5ff;
 }
 
 .grid-backdrop {
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at 20% -10%, rgba(88, 101, 242, 0.3), transparent 55%),
-    radial-gradient(circle at 80% 0%, rgba(84, 214, 229, 0.28), transparent 45%),
-    linear-gradient(140deg, rgba(255, 255, 255, 0.05) 0%, transparent 45%);
+  background: radial-gradient(circle at 20% -10%, rgba(89, 100, 255, 0.22), transparent 60%),
+    radial-gradient(circle at 80% 10%, rgba(84, 214, 229, 0.2), transparent 55%),
+    linear-gradient(120deg, rgba(255, 255, 255, 0.05), transparent 70%);
   z-index: -2;
+}
+
+/* Holder sub-header styles are in styles.css */
+.holder-sub-header h1 {
+  margin: 0 0 6px;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+}
+
+.holder-sub-header p {
+  margin: 0;
+  color: rgba(243, 245, 255, 0.75);
+  font-size: 1rem;
 }
 
 .hw-header {

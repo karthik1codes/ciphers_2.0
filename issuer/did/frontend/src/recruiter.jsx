@@ -1,7 +1,7 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom/client'
+import SharedHeader from './components/SharedHeader'
+import '../styles.css'
 import './index.css'
 import './recruiter.css'
 import VPIntakePanel from './recruiter/components/VPIntakePanel'
@@ -17,21 +17,15 @@ function RecruiterDashboard() {
   return (
     <div className="recruiter-page">
       <div className="recruiter-backdrop" aria-hidden />
-      <header className="recruiter-header">
-        <div className="brand">
-          <span className="logo">ciphers</span>
+      <SharedHeader activeTab="recruiter" />
+      <div className="recruiter-sub-header">
+        <div className="recruiter-sub-header-content">
           <div>
             <h1>Recruiter Verification Console</h1>
             <p>High-assurance verification of BBS+ proofs, DID authenticity, and talent credentials.</p>
           </div>
         </div>
-        <nav className="recruiter-nav">
-          <a href="/index.html">Landing</a>
-          <a href="/issuer.html">Issuer</a>
-          <a href="/holder-wallet.html">Holder</a>
-          <a href="/metamask.html">MetaMask</a>
-        </nav>
-      </header>
+      </div>
 
       <main>
         <section className="hero">

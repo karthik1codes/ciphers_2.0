@@ -1,5 +1,6 @@
 import React from 'react'
 import { HolderProvider } from './context/HolderContext'
+import SharedHeader from '../components/SharedHeader'
 import StatsBar from './components/StatsBar'
 import DidManager from './components/DidManager'
 import CredentialInbox from './components/CredentialInbox'
@@ -12,29 +13,28 @@ import VerificationRequests from './components/VerificationRequests'
 import RevocationMonitor from './components/RevocationMonitor'
 import AuditTrail from './components/AuditTrail'
 
-function Header() {
+function HolderHeader() {
   return (
-    <header className="hw-header">
-      <div className="brand">
-        <span className="brand-mark">ciphers</span>
-        <span className="brand-subtitle">Holder Wallet</span>
+    <div className="holder-sub-header">
+      <div className="holder-sub-header-content">
+        <div>
+          <h1>Holder Wallet</h1>
+          <p>Manage your decentralized identity and verifiable credentials.</p>
+        </div>
+        <nav className="hw-nav">
+          <a href="#module-did">DIDs</a>
+          <a href="#module-inbox">Inbox</a>
+          <a href="#module-vault">Vault</a>
+          <a href="#module-documents">Documents</a>
+          <a href="#module-selective">Selective proof</a>
+          <a href="#module-share">Share</a>
+          <a href="#module-security">Security</a>
+          <a href="#module-requests">Requests</a>
+          <a href="#module-revocation">Revocation</a>
+          <a href="#module-audit">Audit</a>
+        </nav>
       </div>
-      <nav className="hw-nav">
-        <a href="#module-did">DIDs</a>
-        <a href="#module-inbox">Inbox</a>
-        <a href="#module-vault">Vault</a>
-        <a href="#module-documents">Documents</a>
-        <a href="#module-selective">Selective proof</a>
-        <a href="#module-share">Share</a>
-        <a href="#module-security">Security</a>
-        <a href="#module-requests">Requests</a>
-        <a href="#module-revocation">Revocation</a>
-        <a href="#module-audit">Audit</a>
-      </nav>
-      <a className="cta-link" href="/index.html">
-        ← Back
-      </a>
-    </header>
+    </div>
   )
 }
 
@@ -43,7 +43,8 @@ export default function HolderApp() {
     <HolderProvider>
       <div className="holder-wallet">
         <div className="grid-backdrop" aria-hidden />
-        <Header />
+        <SharedHeader activeTab="holder" />
+        <HolderHeader />
         <main>
           <section className="hero">
             <div className="hero-copy">
