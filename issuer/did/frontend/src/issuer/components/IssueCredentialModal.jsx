@@ -43,23 +43,51 @@ export default function IssueCredentialModal({ isOpen, onClose, student, onIssue
   const handleIssue = async () => {
     setLoading(true)
     try {
-      const response = await fetch('/issue', {
+      // Use /issue-anchored endpoint for blockchain-anchored credentials
+      const response = await fetch('/issue-anchored', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          template,
-          fields,
-          evidenceCID,
-          proofType,
-          studentId: student?.id,
+          holderDid: student?.did || `did:example:${student?.id || 'student'}`,
+          type: template === 'degree' ? 'DegreeCredential' : template === 'certificate' ? 'CertificateCredential' : 'IDCredential',
+          claims: {
+            name: fields.name,
+            email: fields.email,
+            program: fields.program,
+            year: fields.year,
+            gpa: fields.gpa,
+            ...fields, // Include all other fields
+          },
+          evidence: evidenceCID ? {
+            cid: evidenceCID,
+          } : undefined,
         }),
       })
-      const vc = await response.json()
-      onIssue(vc)
-      onClose()
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`)
+      }
+      
+      const result = await response.json()
+      
+      // Handle response format: { success: true, credential: {...}, anchor: {...} }
+      if (result.success && result.credential) {
+        // Format the credential for the frontend
+        const vc = {
+          ...result.credential,
+          txHash: result.anchor?.txHash,
+          blockNumber: result.anchor?.blockNumber,
+          anchor: result.anchor,
+        }
+        onIssue(vc)
+        onClose()
+      } else {
+        throw new Error('Invalid response format from server')
+      }
     } catch (error) {
       console.error('Failed to issue credential:', error)
-      alert('Failed to issue credential')
+      alert(`Failed to issue credential: ${error.message}`)
     } finally {
       setLoading(false)
     }

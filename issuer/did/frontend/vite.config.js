@@ -16,6 +16,10 @@ export default defineConfig({
         target: 'http://localhost:3000',
         changeOrigin: true
       },
+      '/issue-anchored': {
+        target: 'http://localhost:3000',
+        changeOrigin: true
+      },
       '/verify': {
         target: 'http://localhost:3000',
         changeOrigin: true

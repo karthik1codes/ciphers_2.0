@@ -17,6 +17,7 @@ const agent = require('./agent');
 // Import route handlers
 const didRoutes = require('./routes/did');
 const issueRoutes = require('./routes/issue');
+const issueAnchoredRoutes = require('./routes/issue-anchored');
 const receiveRoutes = require('./routes/receive');
 const presentRoutes = require('./routes/present');
 const verifyRoutes = require('./routes/verify');
@@ -43,6 +44,7 @@ app.get('/health', (req, res) => {
 // API Routes
 app.use('/generate-did', didRoutes);
 app.use('/issue', issueRoutes);
+app.use('/issue-anchored', issueAnchoredRoutes);
 app.use('/receive-vc', receiveRoutes);
 app.use('/present', presentRoutes);
 app.use('/verify', verifyRoutes);
@@ -76,6 +78,7 @@ async function startServer() {
       console.log(`📋 Available endpoints:`);
       console.log(`   POST   /generate-did`);
       console.log(`   POST   /issue`);
+      console.log(`   POST   /issue-anchored  (BBS+ signature + blockchain anchor)`);
       console.log(`   POST   /receive-vc`);
       console.log(`   POST   /present`);
       console.log(`   POST   /verify`);

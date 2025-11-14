@@ -17,6 +17,7 @@ export default function StudentTable({ students, onView, onVerify, onIssue }) {
       pending: { class: 'badge-pending', text: 'Pending' },
       verified: { class: 'badge-verified', text: 'Verified' },
       issued: { class: 'badge-issued', text: 'Issued' },
+      revoked: { class: 'badge-revoked', text: 'Revoked' },
       rejected: { class: 'badge-rejected', text: 'Rejected' },
     }
     const badge = badges[status] || badges.pending
@@ -40,34 +41,49 @@ export default function StudentTable({ students, onView, onVerify, onIssue }) {
           <thead>
             <tr>
               <th>Name</th>
-              <th>DID</th>
               <th>Roll No</th>
+              <th>Degree</th>
+              <th>College</th>
+              <th>CGPA</th>
               <th>Status</th>
+              <th>Issued Date</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {filteredStudents.length === 0 ? (
               <tr>
-                <td colSpan="5" className="empty-row">
+                <td colSpan="8" className="empty-row">
                   No students found
                 </td>
               </tr>
             ) : (
               filteredStudents.map((student) => (
                 <tr key={student.id}>
-                  <td>{student.name}</td>
                   <td>
-                    <code className="did-cell">{student.did || 'N/A'}</code>
+                    <strong>{student.name}</strong>
+                    {student.did && (
+                      <div>
+                        <code className="did-cell-small">{student.did}</code>
+                      </div>
+                    )}
                   </td>
                   <td>{student.rollNo || 'N/A'}</td>
+                  <td>{student.degree || '-'}</td>
+                  <td>{student.college || '-'}</td>
+                  <td>{student.cgpa || '-'}</td>
                   <td>{getStatusBadge(student.status)}</td>
+                  <td>
+                    {student.issueDate
+                      ? new Date(student.issueDate).toLocaleDateString()
+                      : '-'}
+                  </td>
                   <td>
                     <div className="action-buttons">
                       <button
                         className="btn-action btn-view"
                         onClick={() => onView(student)}
-                        title="View"
+                        title="View Details"
                       >
                         👁️
                       </button>
@@ -87,6 +103,15 @@ export default function StudentTable({ students, onView, onVerify, onIssue }) {
                           title="Verify"
                         >
                           ✓
+                        </button>
+                      )}
+                      {student.credentialId && (
+                        <button
+                          className="btn-action btn-view"
+                          onClick={() => onView({ ...student, isCredential: true })}
+                          title="View Credential"
+                        >
+                          📋
                         </button>
                       )}
                     </div>

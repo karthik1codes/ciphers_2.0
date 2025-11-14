@@ -231,22 +231,30 @@ export function HolderProvider({ children }) {
   }, [])
 
   const enqueueCredential = useCallback(
-    (rawCredential, source = 'manual') => {
+    (rawCredential, source = 'manual', anchor = null) => {
       const id = generateRandomId('inbox')
+      
+      // Handle response format: { success: true, credential: {...}, anchor: {...} }
+      const isResponseFormat = rawCredential.success && rawCredential.credential
+      const credential = isResponseFormat ? rawCredential.credential : rawCredential
+      const anchorInfo = anchor || rawCredential.anchor || null
+      
       dispatch({
         type: 'ENQUEUE_CREDENTIAL',
         payload: {
           id,
-          rawCredential,
-          parsed: rawCredential,
+          rawCredential: isResponseFormat ? rawCredential : credential,
+          parsed: credential,
+          anchor: anchorInfo,
           source,
           status: 'pending',
           receivedAt: new Date().toISOString(),
         },
       })
       logEvent('credential:incoming', 'Received credential offer', {
-        issuer: rawCredential?.issuer,
-        type: rawCredential?.type,
+        issuer: credential?.issuer?.id || credential?.issuer,
+        type: credential?.type,
+        anchored: !!anchorInfo,
       })
       return id
     },
@@ -257,7 +265,12 @@ export function HolderProvider({ children }) {
     (inboxId, category) => {
       const inboxItem = state.inbox.find((item) => item.id === inboxId)
       if (!inboxItem) return
-      const credential = inboxItem.parsed
+      
+      // Handle both direct credential and response format with anchor
+      const responseData = inboxItem.parsed
+      const credential = responseData.credential || responseData.vc || responseData
+      const anchor = responseData.anchor || inboxItem.anchor
+      
       const id = generateRandomId('cred')
       dispatch({
         type: 'ADD_CREDENTIAL',
@@ -270,6 +283,11 @@ export function HolderProvider({ children }) {
           subject: credential?.credentialSubject || {},
           evidence: credential?.evidence || {},
           raw: credential,
+          anchor: anchor ? {
+            txHash: anchor.txHash,
+            blockNumber: anchor.blockNumber,
+            explorerUrl: anchor.txHash ? `https://amoy.polygonscan.com/tx/${anchor.txHash}` : null,
+          } : null,
           status: 'active',
           receivedAt: inboxItem.receivedAt,
           storedAt: new Date().toISOString(),
@@ -278,7 +296,11 @@ export function HolderProvider({ children }) {
         },
       })
       dispatch({ type: 'REMOVE_INBOX_ITEM', payload: { id: inboxId } })
-      logEvent('credential:accept', 'Credential stored in vault', { credentialId: id, issuer: credential?.issuer })
+      logEvent('credential:accept', 'Credential stored in vault', { 
+        credentialId: id, 
+        issuer: credential?.issuer,
+        anchored: !!anchor 
+      })
     },
     [logEvent, state.inbox],
   )

@@ -1,0 +1,32 @@
+{
+  "name": "ciphers-contracts",
+  "version": "1.0.0",
+  "description": "Smart contracts for credential anchoring on Polygon Amoy",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:anchor": "hardhat run scripts/deploy-anchor.ts --network amoy",
+    "deploy:anchor:local": "hardhat run scripts/deploy-anchor.ts --network localhost"
+  },
+  "keywords": [
+    "hardhat",
+    "solidity",
+    "polygon",
+    "credentials",
+    "blockchain"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@types/node": "^20.0.0",
+    "hardhat": "^2.19.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.0",
+    "dotenv": "^16.3.1"
+  }
+}

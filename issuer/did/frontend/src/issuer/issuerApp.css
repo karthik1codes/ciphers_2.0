@@ -1150,6 +1150,16 @@ textarea {
   background: rgba(255, 255, 255, 0.05);
 }
 
+.did-cell-small {
+  font-size: 0.7rem;
+  color: rgba(121, 221, 255, 0.7);
+  background: rgba(121, 221, 255, 0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 4px;
+}
+
 .did-cell {
   font-family: 'Courier New', monospace;
   font-size: 0.85rem;
@@ -1182,6 +1192,22 @@ textarea {
 .badge-rejected {
   background: rgba(239, 68, 68, 0.2);
   color: #ef4444;
+}
+
+.badge-expiring {
+  background: rgba(245, 158, 11, 0.25);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 .badge-active {
@@ -1430,6 +1456,35 @@ textarea {
 }
 
 /* Credential Detail Modal */
+.credential-details-section {
+  margin-top: 24px;
+  padding: 20px;
+  background: rgba(15, 18, 25, 0.4);
+  border-radius: 8px;
+}
+
+.credential-details-section h3 {
+  margin: 0 0 16px;
+  font-size: 1.1rem;
+  color: rgba(244, 245, 255, 0.9);
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 12px;
+}
+
+.info-row-full {
+  grid-column: 1 / -1;
+}
+
+.info-row-full span:last-child {
+  display: block;
+  margin-top: 4px;
+  word-wrap: break-word;
+}
+
 .credential-info {
   display: flex;
   flex-direction: column;
@@ -1663,6 +1718,108 @@ textarea {
 .mapping-section h3 {
   margin: 0 0 16px;
   font-size: 1.1rem;
+}
+
+.mapping-help-text {
+  margin: 0 0 16px;
+  font-size: 0.9rem;
+  color: rgba(244, 245, 255, 0.6);
+}
+
+.mapping-note {
+  margin: 16px 0 0;
+  font-size: 0.85rem;
+  color: rgba(244, 245, 255, 0.5);
+  font-style: italic;
+}
+
+.csv-preview {
+  margin: 24px 0;
+  padding: 20px;
+  background: rgba(15, 18, 25, 0.65);
+  border-radius: 8px;
+}
+
+.csv-preview h3 {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+}
+
+.preview-note {
+  margin: 0 0 16px;
+  font-size: 0.9rem;
+  color: rgba(244, 245, 255, 0.6);
+}
+
+.preview-table {
+  overflow-x: auto;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.preview-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.preview-table th,
+.preview-table td {
+  padding: 8px 12px;
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.preview-table th {
+  background: rgba(45, 156, 219, 0.2);
+  font-weight: 600;
+  color: rgba(244, 245, 255, 0.9);
+  position: sticky;
+  top: 0;
+}
+
+.preview-table td {
+  color: rgba(244, 245, 255, 0.7);
+}
+
+.preview-table tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.column-suggestions {
+  margin: 16px 0;
+  padding: 12px;
+  background: rgba(45, 156, 219, 0.1);
+  border-radius: 6px;
+  border: 1px solid rgba(45, 156, 219, 0.2);
+}
+
+.column-suggestions p {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  color: rgba(244, 245, 255, 0.7);
+}
+
+.suggestion-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.btn-suggestion {
+  padding: 6px 12px;
+  background: rgba(45, 156, 219, 0.2);
+  border: 1px solid rgba(45, 156, 219, 0.4);
+  border-radius: 6px;
+  color: rgba(244, 245, 255, 0.9);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.btn-suggestion:hover {
+  background: rgba(45, 156, 219, 0.3);
+  border-color: rgba(45, 156, 219, 0.6);
 }
 
 .mapping-grid {

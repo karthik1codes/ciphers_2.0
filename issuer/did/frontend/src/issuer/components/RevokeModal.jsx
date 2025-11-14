@@ -68,7 +68,7 @@ export default function RevokeModal({ isOpen, onClose, credential, onRevoke }) {
             <div className="tx-success">
               <p>✅ Revocation successful!</p>
               <a
-                href={`https://mumbai.polygonscan.com/tx/${txHash}`}
+                href={`https://amoy.polygonscan.com/tx/${txHash}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >

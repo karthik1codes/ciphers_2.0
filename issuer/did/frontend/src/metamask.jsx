@@ -87,15 +87,16 @@ function MetaMaskDemo() {
     return getMetaMaskProvider() !== null
   }
 
-  // Polygon Mumbai chain ID
-  const POLYGON_MUMBAI_CHAIN_ID = '0x13881' // 80001 in decimal
+  // Polygon Amoy chain ID (Mumbai deprecated April 2024)
+  const POLYGON_AMOY_CHAIN_ID = '0x13882' // 80002 in decimal (Amoy testnet)
+  // Mumbai (80001) is deprecated - using Amoy (80002) instead
 
-  // Switch to Polygon Mumbai network
-  const switchToPolygonMumbai = async (provider) => {
+  // Switch to Polygon Amoy testnet
+  const switchToPolygonAmoy = async (provider) => {
     try {
       await provider.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: POLYGON_MUMBAI_CHAIN_ID }],
+        params: [{ chainId: POLYGON_AMOY_CHAIN_ID }],
       })
       return true
     } catch (switchError) {
@@ -107,25 +108,25 @@ function MetaMaskDemo() {
             method: 'wallet_addEthereumChain',
             params: [
               {
-                chainId: POLYGON_MUMBAI_CHAIN_ID,
-                chainName: 'Polygon Mumbai',
+                chainId: POLYGON_AMOY_CHAIN_ID,
+                chainName: 'Polygon Amoy Testnet',
                 nativeCurrency: {
                   name: 'MATIC',
                   symbol: 'MATIC',
                   decimals: 18,
                 },
-                rpcUrls: ['https://rpc-mumbai.maticvigil.com/'],
-                blockExplorerUrls: ['https://mumbai.polygonscan.com/'],
+                rpcUrls: ['https://rpc-amoy.polygon.technology'],
+                blockExplorerUrls: ['https://amoy.polygonscan.com/'],
               },
             ],
           })
           return true
         } catch (addError) {
-          console.error('Error adding Polygon Mumbai chain:', addError)
+          console.error('Error adding Polygon Amoy chain:', addError)
           return false
         }
       } else {
-        console.error('Error switching to Polygon Mumbai:', switchError)
+        console.error('Error switching to Polygon Amoy:', switchError)
         return false
       }
     }
@@ -194,11 +195,11 @@ function MetaMaskDemo() {
   const handleChainChanged = (chainId) => {
     setChainId(chainId)
     setStatusMessage(`info:Network changed to chain ID: ${chainId}`)
-    // Optionally switch back to Polygon Mumbai
+    // Optionally switch back to Polygon Amoy
     const provider = getMetaMaskProvider()
-    if (provider && chainId !== POLYGON_MUMBAI_CHAIN_ID) {
-      setStatusMessage('info:Switching to Polygon Mumbai network...')
-      switchToPolygonMumbai(provider)
+    if (provider && chainId !== POLYGON_AMOY_CHAIN_ID) {
+      setStatusMessage('info:Switching to Polygon Amoy testnet...')
+      switchToPolygonAmoy(provider)
     }
   }
 
@@ -409,11 +410,11 @@ function MetaMaskDemo() {
         console.error('Error getting chain ID:', error)
       }
 
-      // Step 4: Optionally switch to Polygon Mumbai (you can make this optional)
-      // Uncomment if you want to automatically switch to Polygon Mumbai
-      // if (currentChainId !== POLYGON_MUMBAI_CHAIN_ID) {
-      //   setStatusMessage('info:Switching to Polygon Mumbai network...')
-      //   await switchToPolygonMumbai(provider)
+      // Step 4: Optionally switch to Polygon Amoy (you can make this optional)
+      // Uncomment if you want to automatically switch to Polygon Amoy
+      // if (currentChainId !== POLYGON_AMOY_CHAIN_ID) {
+      //   setStatusMessage('info:Switching to Polygon Amoy testnet...')
+      //   await switchToPolygonAmoy(provider)
       // }
 
       // Step 5: Set connected state
@@ -590,15 +591,15 @@ function MetaMaskDemo() {
                         </small>
                         {chainId && (
                           <small style={{ display: 'block', opacity: 0.7, marginTop: '4px', fontSize: '0.85rem' }}>
-                            Network: {chainId === '0x13881' ? 'Polygon Mumbai' : `Chain ID: ${chainId}`}
-                            {chainId !== '0x13881' && walletConnected && (
+                            Network: {chainId === '0x13882' ? 'Polygon Amoy' : `Chain ID: ${chainId}`}
+                            {chainId !== '0x13882' && walletConnected && (
                               <button
                                 type="button"
                                 onClick={async () => {
                                   const provider = getMetaMaskProvider()
                                   if (provider) {
-                                    setStatusMessage('info:Switching to Polygon Mumbai...')
-                                    await switchToPolygonMumbai(provider)
+                                    setStatusMessage('info:Switching to Polygon Amoy testnet...')
+                                    await switchToPolygonAmoy(provider)
                                   }
                                 }}
                                 style={{
@@ -612,7 +613,7 @@ function MetaMaskDemo() {
                                   cursor: 'pointer'
                                 }}
                               >
-                                Switch to Polygon Mumbai
+                                Switch to Polygon Amoy
                               </button>
                             )}
                           </small>

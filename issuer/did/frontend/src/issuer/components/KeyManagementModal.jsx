@@ -57,7 +57,7 @@ export default function KeyManagementModal({ isOpen, onClose, keys, onRotate }) 
                       <div className="key-row">
                         <span className="key-label">Published:</span>
                         <a
-                          href={`https://mumbai.polygonscan.com/tx/${key.txHash}`}
+                          href={`https://amoy.polygonscan.com/tx/${key.txHash}`}
                           target="_blank"
                           rel="noopener noreferrer"
                         >

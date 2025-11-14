@@ -50,7 +50,7 @@ export default function CredentialDetailModal({ isOpen, onClose, credential, onR
               <div className="info-row">
                 <span className="info-label">Transaction:</span>
                 <a
-                  href={`https://mumbai.polygonscan.com/tx/${credential.txHash}`}
+                  href={`https://amoy.polygonscan.com/tx/${credential.txHash}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -58,6 +58,78 @@ export default function CredentialDetailModal({ isOpen, onClose, credential, onR
                 </a>
               </div>
             )}
+          </div>
+
+          <div className="credential-details-section">
+            <h3>Student Information</h3>
+            <div className="details-grid">
+              {(credential.credentialSubject || {}).name && (
+                <div className="info-row">
+                  <span className="info-label">Name:</span>
+                  <span>{(credential.credentialSubject || {}).name}</span>
+                </div>
+              )}
+              {(credential.credentialSubject || {}).email && (
+                <div className="info-row">
+                  <span className="info-label">Email:</span>
+                  <span>{(credential.credentialSubject || {}).email}</span>
+                </div>
+              )}
+              {(credential.credentialSubject || {}).rollNo && (
+                <div className="info-row">
+                  <span className="info-label">Roll No:</span>
+                  <span>{(credential.credentialSubject || {}).rollNo}</span>
+                </div>
+              )}
+              {(credential.credentialSubject || {}).age && (
+                <div className="info-row">
+                  <span className="info-label">Age:</span>
+                  <span>{(credential.credentialSubject || {}).age}</span>
+                </div>
+              )}
+              {(credential.credentialSubject || {}).degree && (
+                <div className="info-row">
+                  <span className="info-label">Degree:</span>
+                  <span>{(credential.credentialSubject || {}).degree}</span>
+                </div>
+              )}
+              {(credential.credentialSubject || {}).college && (
+                <div className="info-row">
+                  <span className="info-label">College:</span>
+                  <span>{(credential.credentialSubject || {}).college}</span>
+                </div>
+              )}
+              {(credential.credentialSubject || {}).cgpa && (
+                <div className="info-row">
+                  <span className="info-label">CGPA:</span>
+                  <span>{(credential.credentialSubject || {}).cgpa}</span>
+                </div>
+              )}
+              {(credential.credentialSubject || {}).projectTitle && (
+                <div className="info-row">
+                  <span className="info-label">Project Title:</span>
+                  <span>{(credential.credentialSubject || {}).projectTitle}</span>
+                </div>
+              )}
+              {(credential.credentialSubject || {}).achievements && (
+                <div className="info-row info-row-full">
+                  <span className="info-label">Achievements:</span>
+                  <span>{(credential.credentialSubject || {}).achievements}</span>
+                </div>
+              )}
+              {(credential.credentialSubject || {}).experience && (
+                <div className="info-row info-row-full">
+                  <span className="info-label">Experience:</span>
+                  <span>{(credential.credentialSubject || {}).experience}</span>
+                </div>
+              )}
+              {(credential.credentialSubject || {}).contributions && (
+                <div className="info-row info-row-full">
+                  <span className="info-label">Contributions:</span>
+                  <span>{(credential.credentialSubject || {}).contributions}</span>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="vc-json-section">

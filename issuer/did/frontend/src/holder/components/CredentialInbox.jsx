@@ -28,6 +28,21 @@ function InboxRow({ item, onAccept, onReject }) {
           <dt>Valid from</dt>
           <dd>{formatDateTime(item.parsed?.validFrom || item.parsed?.issuanceDate)}</dd>
         </div>
+        {item.anchor && item.anchor.txHash && (
+          <div>
+            <dt>Blockchain Anchor</dt>
+            <dd>
+              <a
+                href={`https://amoy.polygonscan.com/tx/${item.anchor.txHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#77dbff', textDecoration: 'underline' }}
+              >
+                🔗 Block #{item.anchor.blockNumber}
+              </a>
+            </dd>
+          </div>
+        )}
       </dl>
       {item.status === 'pending' ? (
         <div className="button-row">

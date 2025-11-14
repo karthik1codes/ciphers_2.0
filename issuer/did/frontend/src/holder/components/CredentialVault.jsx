@@ -75,6 +75,23 @@ function CredentialDetail({ credential, onDelete, onCheckRevocation }) {
               ) : null}
             </dd>
           </div>
+          {credential.anchor && credential.anchor.txHash && (
+            <div>
+              <dt>Blockchain Anchor</dt>
+              <dd>
+                <a
+                  href={credential.anchor.explorerUrl || `https://amoy.polygonscan.com/tx/${credential.anchor.txHash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#77dbff', textDecoration: 'underline' }}
+                >
+                  🔗 View on PolygonScan (Block #{credential.anchor.blockNumber})
+                </a>
+                <br />
+                <small className="muted">Tx: {truncate(credential.anchor.txHash, 20)}</small>
+              </dd>
+            </div>
+          )}
         </dl>
       </section>
 

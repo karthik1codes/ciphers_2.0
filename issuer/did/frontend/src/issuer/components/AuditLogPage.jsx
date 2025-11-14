@@ -5,7 +5,13 @@ export default function AuditLogPage({ logs }) {
   const [searchTerm, setSearchTerm] = useState('')
 
   const filteredLogs = logs.filter((log) => {
-    if (filter !== 'all' && log.action !== filter) return false
+    // Handle bulk upload filter
+    if (filter === 'bulk_upload') {
+      if (!log.details?.toLowerCase().includes('bulk upload')) return false
+    } else if (filter !== 'all' && log.action !== filter) {
+      return false
+    }
+    
     if (searchTerm) {
       const search = searchTerm.toLowerCase()
       return (
@@ -41,7 +47,11 @@ export default function AuditLogPage({ logs }) {
     URL.revokeObjectURL(url)
   }
 
-  const getActionIcon = (action) => {
+  const getActionIcon = (action, details) => {
+    // Check if it's a bulk upload
+    if (details?.toLowerCase().includes('bulk upload')) {
+      return '📦'
+    }
     const icons = {
       issue: '📜',
       revoke: '🚫',
@@ -64,6 +74,7 @@ export default function AuditLogPage({ logs }) {
           >
             <option value="all">All Actions</option>
             <option value="issue">Issue</option>
+            <option value="bulk_upload">Bulk Upload</option>
             <option value="revoke">Revoke</option>
             <option value="verify">Verify</option>
             <option value="update">Update</option>
@@ -107,7 +118,7 @@ export default function AuditLogPage({ logs }) {
                   <td>{new Date(log.timestamp).toLocaleString()}</td>
                   <td>
                     <span className="action-badge">
-                      {getActionIcon(log.action)} {log.action}
+                      {getActionIcon(log.action, log.details)} {log.details?.toLowerCase().includes('bulk upload') ? 'Bulk Upload' : log.action}
                     </span>
                   </td>
                   <td>{log.user || 'System'}</td>
@@ -118,7 +129,7 @@ export default function AuditLogPage({ logs }) {
                   <td>
                     {log.txHash ? (
                       <a
-                        href={`https://mumbai.polygonscan.com/tx/${log.txHash}`}
+                        href={`https://amoy.polygonscan.com/tx/${log.txHash}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
