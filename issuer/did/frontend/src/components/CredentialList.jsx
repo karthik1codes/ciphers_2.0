@@ -7,7 +7,7 @@ function CredentialList() {
     {
       id: '1',
       type: 'Education Credential',
-      issuer: 'University of Technology',
+      issuer: 'MVJ College of Engineering',
       issueDate: '2024-01-15',
       status: 'Active',
       holder: 'John Doe'

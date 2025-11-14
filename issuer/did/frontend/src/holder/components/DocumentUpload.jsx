@@ -23,20 +23,44 @@ export default function DocumentUpload() {
       return
     }
     setError('')
-    setStatusMessage('Encrypting and storing document…')
+    setStatusMessage('Encrypting document…')
+    
     try {
       const result = await encryptAndStoreDocument({
         file,
         credentialId: credentialId || undefined,
         description,
       })
-      setStatusMessage(`Stored encrypted document with CID ${result.cid}`)
+      
+      // Determine upload status based on storage mode
+      const isSimulated = state.settings.ipfs.mode === 'simulate'
+      const isUploaded = result.storage?.uploaded || (!isSimulated && state.settings.ipfs.endpoint && result.storage?.result)
+      
+      if (isUploaded && result.ipfsUrl) {
+        setStatusMessage(`✓ Successfully uploaded to IPFS! View at: ${result.ipfsUrl}`)
+      } else if (isUploaded) {
+        setStatusMessage(`✓ Successfully uploaded to IPFS! CID: ${result.cid}`)
+      } else if (isSimulated) {
+        setStatusMessage(`✓ Encrypted and stored locally (simulated). CID: ${result.cid}`)
+      } else if (state.settings.ipfs.mode === 'client' && !state.settings.ipfs.endpoint) {
+        setStatusMessage(`✓ Encrypted (IPFS not configured). CID: ${result.cid}`)
+      } else {
+        setStatusMessage(`✓ Encrypted and stored. CID: ${result.cid}`)
+      }
+      
       setFile(null)
       setDescription('')
       setCredentialId('')
+      
+      // Clear status message after 5 seconds
+      setTimeout(() => setStatusMessage(''), 5000)
     } catch (err) {
-      setError(err.message)
+      console.error('Upload error:', err)
+      setError(err.message || 'Failed to encrypt and upload document')
       setStatusMessage('')
+      
+      // Clear error after 5 seconds
+      setTimeout(() => setError(''), 5000)
     }
   }
 
@@ -90,11 +114,47 @@ export default function DocumentUpload() {
         </div>
 
         <div className="panel">
-          <h3>Storage mode</h3>
-          <p className="muted">Current IPFS mode: {state.settings.ipfs.mode === 'client' ? 'Direct client upload' : 'Simulation only'}.</p>
-          <p className="muted">
-            Configure endpoint and token in security settings to enable real uploads via web3.storage or Filebase.
+          <h3>Storage Configuration</h3>
+          <div style={{ padding: '0.75rem', background: '#1a1a1a', borderRadius: '6px', marginBottom: '0.75rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+              <span className="muted">IPFS Mode:</span>
+              <strong style={{ color: state.settings.ipfs.mode === 'client' ? '#10b981' : '#f59e0b' }}>
+                {state.settings.ipfs.mode === 'client' ? 'Client Upload' : 'Simulate'}
+              </strong>
+            </div>
+            {state.settings.ipfs.mode === 'client' ? (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <span className="muted">Endpoint:</span>
+                  <strong style={{ fontSize: '0.875rem', color: '#fff' }}>
+                    {state.settings.ipfs.endpoint || 'Not configured'}
+                  </strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span className="muted">Authentication:</span>
+                  <strong style={{ color: state.settings.ipfs.token ? '#10b981' : '#f59e0b' }}>
+                    {state.settings.ipfs.token ? 'Configured' : 'Not set'}
+                  </strong>
+                </div>
+              </>
+            ) : (
+              <p className="muted" style={{ marginTop: '0.5rem', fontSize: '0.875rem' }}>
+                Documents are encrypted locally but not uploaded to IPFS.
+              </p>
+            )}
+          </div>
+          <p className="muted" style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>
+            {state.settings.ipfs.mode === 'client' 
+              ? 'Documents will be encrypted and uploaded to IPFS via the configured endpoint (Filebase/web3.storage/IPFS).'
+              : 'Configure IPFS storage in Security settings to enable real uploads via Filebase or other IPFS pinning services.'}
           </p>
+          <a 
+            href="#module-security" 
+            className="button ghost small" 
+            style={{ marginTop: '0.75rem', display: 'inline-block' }}
+          >
+            Configure IPFS Settings
+          </a>
         </div>
       </div>
 
@@ -104,7 +164,8 @@ export default function DocumentUpload() {
             <tr>
               <th>Document</th>
               <th>CID</th>
-              <th>Hash</th>
+              <th>IPFS URL</th>
+              <th>Status</th>
               <th>Linked credential</th>
               <th>Uploaded</th>
             </tr>
@@ -112,7 +173,7 @@ export default function DocumentUpload() {
           <tbody>
             {documents.length === 0 ? (
               <tr>
-                <td colSpan={5}>
+                <td colSpan={6}>
                   <div className="empty-state">No documents encrypted yet.</div>
                 </td>
               </tr>
@@ -125,8 +186,63 @@ export default function DocumentUpload() {
                       <span className="muted">{doc.description}</span>
                     </div>
                   </td>
-                  <td className="mono">{truncate(doc.cid, 16)}</td>
-                  <td className="mono">{truncate(doc.hash, 16)}</td>
+                  <td className="mono" style={{ fontSize: '0.875rem' }}>
+                    {truncate(doc.cid, 16)}
+                  </td>
+                  <td>
+                    {doc.ipfsUrl ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                        <a
+                          href={doc.ipfsUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            color: '#60a5fa',
+                            textDecoration: 'underline',
+                            fontSize: '0.875rem',
+                            wordBreak: 'break-all'
+                          }}
+                          title={doc.ipfsUrl}
+                        >
+                          🔗 View on IPFS
+                        </a>
+                        {doc.ipfsGateways && doc.ipfsGateways.length > 1 && (
+                          <details style={{ fontSize: '0.75rem' }}>
+                            <summary style={{ cursor: 'pointer', color: '#888' }}>
+                              {doc.ipfsGateways.length} gateways
+                            </summary>
+                            <div style={{ marginTop: '0.25rem', padding: '0.5rem', background: '#1a1a1a', borderRadius: '4px' }}>
+                              {doc.ipfsGateways.map((gateway, idx) => (
+                                <div key={idx} style={{ marginBottom: '0.25rem' }}>
+                                  <a
+                                    href={gateway}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ color: '#60a5fa', fontSize: '0.75rem', wordBreak: 'break-all' }}
+                                  >
+                                    {gateway.replace('https://', '').split('/')[0]}
+                                  </a>
+                                </div>
+                              ))}
+                            </div>
+                          </details>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="muted" style={{ fontSize: '0.875rem' }}>
+                        {doc.cid?.startsWith('pseudo-') ? 'Simulated' : 'N/A'}
+                      </span>
+                    )}
+                  </td>
+                  <td>
+                    {doc.storage?.uploaded ? (
+                      <span style={{ color: '#10b981', fontSize: '0.875rem' }}>✓ Uploaded</span>
+                    ) : doc.storage?.mode === 'simulate' ? (
+                      <span style={{ color: '#f59e0b', fontSize: '0.875rem' }}>Simulated</span>
+                    ) : (
+                      <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>Local</span>
+                    )}
+                  </td>
                   <td>{doc.credentialId ? credentialOptions.find((opt) => opt.id === doc.credentialId)?.title : '—'}</td>
                   <td>{formatDateTime(doc.uploadedAt)}</td>
                 </tr>

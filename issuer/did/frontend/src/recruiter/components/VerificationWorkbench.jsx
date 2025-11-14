@@ -7,27 +7,46 @@ const defaultResults = {
   cid: false,
 }
 
-export default function VerificationWorkbench({ vpPayload }) {
+export default function VerificationWorkbench({ vpPayload, onVerificationComplete }) {
   const [results, setResults] = useState(defaultResults)
   const [log, setLog] = useState([])
+  const [isVerifying, setIsVerifying] = useState(false)
 
-  const runVerification = () => {
+  const runVerification = async () => {
+    if (!vpPayload) {
+      alert('Please load a Verifiable Presentation first')
+      return
+    }
+
+    setIsVerifying(true)
+    
+    // Simulate verification process with realistic delays
+    await new Promise(resolve => setTimeout(resolve, 500))
+    
     const newResults = {
       bbs: true,
       did: true,
       revocation: Math.random() > 0.15,
       cid: Math.random() > 0.1,
     }
+    
     setResults(newResults)
-    setLog((prev) => [
-      {
-        id: crypto.randomUUID(),
-        timestamp: new Date().toISOString(),
-        message: `Verified VC from ${vpPayload?.verifiableCredential?.[0]?.issuer ?? 'unknown issuer'}`,
-        results: newResults,
-      },
-      ...prev.slice(0, 4),
-    ])
+    
+    const logEntry = {
+      id: crypto.randomUUID(),
+      timestamp: new Date().toISOString(),
+      message: `Verified VC from ${vpPayload?.verifiableCredential?.[0]?.issuer ?? 'unknown issuer'}`,
+      results: newResults,
+    }
+    
+    setLog((prev) => [logEntry, ...prev.slice(0, 4)])
+    
+    // Pass results to parent component for AI insights
+    if (onVerificationComplete) {
+      onVerificationComplete(newResults)
+    }
+    
+    setIsVerifying(false)
   }
 
   return (
@@ -37,8 +56,13 @@ export default function VerificationWorkbench({ vpPayload }) {
           <h3>Verification engine</h3>
           <p className="muted">BBS+ proof validation, DID resolution, revocation check, and CID integrity.</p>
         </div>
-        <button type="button" className="button primary small" onClick={runVerification}>
-          Run verification
+        <button 
+          type="button" 
+          className="button primary small" 
+          onClick={runVerification}
+          disabled={!vpPayload || isVerifying}
+        >
+          {isVerifying ? 'Verifying...' : 'Run verification'}
         </button>
       </header>
       <div className="status-grid">

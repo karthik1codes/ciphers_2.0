@@ -4,7 +4,7 @@ const candidateIndex = [
   {
     name: 'Avery Chen',
     skills: ['Zero-knowledge proofs', 'Rust', 'Research'],
-    university: 'University of Technology',
+    university: 'MVJ College of Engineering',
   },
   {
     name: 'Nina Alvarez',

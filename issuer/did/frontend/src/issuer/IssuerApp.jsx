@@ -93,7 +93,7 @@ export default function IssuerApp() {
   const [showRevokeModal, setShowRevokeModal] = useState(false)
 
   // Mock data
-  const [issuerName] = useState('University of Technology')
+  const [issuerName] = useState('MVJ College of Engineering')
   const [issuerDID] = useState('did:ethr:0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb')
   const [stats, setStats] = useState({ issued: 42, active: 38, revoked: 4 })
   const [students] = useState([

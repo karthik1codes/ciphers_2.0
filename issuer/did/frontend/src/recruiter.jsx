@@ -13,6 +13,17 @@ import OfflineVerificationPanel from './recruiter/components/OfflineVerification
 
 function RecruiterDashboard() {
   const [vpPayload, setVpPayload] = useState(null)
+  const [verificationResults, setVerificationResults] = useState(null)
+
+  const handleVerificationComplete = (results) => {
+    setVerificationResults(results)
+  }
+
+  const handleVPLoad = (payload) => {
+    setVpPayload(payload)
+    // Reset verification results when new VP is loaded
+    setVerificationResults(null)
+  }
 
   return (
     <div className="recruiter-page">
@@ -60,14 +71,20 @@ function RecruiterDashboard() {
         </section>
 
         <section className="workspace" id="workspace">
-          <VPIntakePanel onLoad={setVpPayload} />
-          <VerificationWorkbench vpPayload={vpPayload} />
+          <VPIntakePanel onLoad={handleVPLoad} />
+          <VerificationWorkbench 
+            vpPayload={vpPayload} 
+            onVerificationComplete={handleVerificationComplete}
+          />
         </section>
 
         <AdvancedToolkit />
 
         <section className="ai-grid" id="ai">
-          <AIInsightsPanel />
+          <AIInsightsPanel 
+            verificationResults={verificationResults}
+            vpPayload={vpPayload}
+          />
           <SemanticSearchPanel />
           <OfflineVerificationPanel />
         </section>

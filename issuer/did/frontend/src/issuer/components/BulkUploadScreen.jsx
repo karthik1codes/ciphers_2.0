@@ -54,7 +54,7 @@ export default function BulkUploadScreen({ onUpload, issuerDID, issuerName }) {
       type: ['VerifiableCredential', 'DegreeCredential', 'StudentCredential'],
       issuer: {
         id: issuerDID || 'did:ethr:0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb',
-        name: issuerName || 'University of Technology'
+        name: issuerName || 'MVJ College of Engineering'
       },
       issuanceDate: issuanceDate,
       credentialSubject: credentialSubject,

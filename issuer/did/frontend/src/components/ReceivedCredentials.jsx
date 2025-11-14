@@ -51,7 +51,7 @@ function ReceivedCredentials() {
             "type": ["VerifiableCredential", "UniversityDegreeCredential"],
             "issuer": {
               "id": "did:example:76e12ec712ebc6f1c221ebfeb1f",
-              "name": "University of Technology"
+              "name": "MVJ College of Engineering"
             },
             "issuanceDate": "2024-01-15T10:00:00Z",
             "credentialSubject": {
