@@ -76,10 +76,10 @@ function RecruiterDashboard() {
           <h2>Ready to verify talent without compromise?</h2>
           <p>Pair the recruiter console with the holder wallet and issuer portal for a zero-trust credential ecosystem.</p>
           <div className="cta-actions">
-            <a href="/metamask.html" className="button primary">
+            <a href="/metamask" className="button primary">
               Try login flow
             </a>
-            <a href="/issuer.html" className="button ghost">
+            <a href="/issuer" className="button ghost">
               Explore issuer tooling
             </a>
           </div>

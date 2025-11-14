@@ -37,7 +37,7 @@ function Landing() {
               guesswork.
             </p>
             <div className="cta-group">
-              <a href="/holder-wallet.html" className="button primary">
+              <a href="/holder" className="button primary">
                 Launch holder wallet
               </a>
               <a href="#workflow" className="button secondary">
@@ -88,7 +88,7 @@ function Landing() {
           <article className="role-card">
             <h3>Issuer console</h3>
             <p>College admins verify learners, mint W3C VCs, and sign with DID keys to guarantee authenticity.</p>
-            <a href="/issuer.html" className="button tertiary">
+            <a href="/issuer" className="button tertiary">
               Launch issuer portal
             </a>
           </article>
@@ -97,14 +97,14 @@ function Landing() {
             <p>
               Students decrypt credentials, manage consent, and preserve encrypted CIDs inside a DID-controlled vault.
             </p>
-            <a href="/holder-wallet.html" className="button tertiary">
+            <a href="/holder" className="button tertiary">
               Manage wallet
             </a>
           </article>
           <article className="role-card">
             <h3>Recruiter dashboard</h3>
             <p>Talent teams request selective disclosures, validate proofs, and cross-check CIDs on the permaweb.</p>
-              <a href="/recruiter.html" className="button tertiary">
+              <a href="/verifier" className="button tertiary">
               Review proofs
             </a>
           </article>
@@ -165,14 +165,14 @@ function Landing() {
           <article className="panel">
             <h3>Deploy issuer instance</h3>
             <p>Spin up decentralized issuance workflows with built-in DID key management and Arweave anchoring.</p>
-            <a className="button tertiary" href="/issuer.html">
+            <a className="button tertiary" href="/issuer">
               Start issuing
             </a>
           </article>
           <article className="panel">
             <h3>Empower every learner</h3>
             <p>Offer students an intuitive wallet that keeps credentials encrypted, permanent, and under their control.</p>
-            <a href="/holder-wallet.html" className="button tertiary">
+            <a href="/holder" className="button tertiary">
               Equip holders
             </a>
           </article>
