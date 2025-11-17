@@ -88,6 +88,10 @@ export default defineConfig({
       '/status': {
         target: 'http://localhost:3000',
         changeOrigin: true
+      },
+      '^/2fa(?:$|/)': {
+        target: 'http://localhost:3000',
+        changeOrigin: true
       }
     }
   }

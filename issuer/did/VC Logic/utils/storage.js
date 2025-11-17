@@ -23,9 +23,10 @@
 const fs = require('fs');
 const path = require('path');
 
-// Storage file path
+// Storage file paths
 const STORAGE_DIR = path.join(__dirname, '..', 'data');
 const STORAGE_FILE = path.join(STORAGE_DIR, 'credentials.json');
+const TWOFA_FILE = path.join(STORAGE_DIR, 'issuer-2fa.json');
 
 /**
  * Ensure storage directory and file exist
@@ -41,6 +42,18 @@ function ensureStorage() {
   if (!fs.existsSync(STORAGE_FILE)) {
     fs.writeFileSync(STORAGE_FILE, JSON.stringify([], null, 2));
     console.log(`Created storage file: ${STORAGE_FILE}`);
+  }
+  
+  // Create 2FA storage file if it doesn't exist
+  if (!fs.existsSync(TWOFA_FILE)) {
+    fs.writeFileSync(TWOFA_FILE, JSON.stringify({
+      enabled: false,
+      secret: null,
+      backupCodes: [],
+      createdAt: null,
+      enabledAt: null,
+    }, null, 2));
+    console.log(`Created 2FA storage file: ${TWOFA_FILE}`);
   }
 }
 
@@ -238,6 +251,117 @@ function getRevocationStatus(credentialId) {
   }
 }
 
+/**
+ * Get issuer 2FA configuration
+ * 
+ * @returns {object} - 2FA configuration object
+ */
+function getIssuer2FA() {
+  try {
+    ensureStorage();
+    
+    if (!fs.existsSync(TWOFA_FILE)) {
+      return {
+        enabled: false,
+        secret: null,
+        backupCodes: [],
+        createdAt: null,
+        enabledAt: null,
+      };
+    }
+    
+    const data = fs.readFileSync(TWOFA_FILE, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    console.error('Error reading 2FA configuration:', error);
+    return {
+      enabled: false,
+      secret: null,
+      backupCodes: [],
+      createdAt: null,
+      enabledAt: null,
+    };
+  }
+}
+
+/**
+ * Save issuer 2FA configuration
+ * 
+ * @param {object} twoFAConfig - 2FA configuration object
+ * @returns {object} - Saved 2FA configuration
+ */
+function saveIssuer2FA(twoFAConfig) {
+  try {
+    ensureStorage();
+    
+    const config = {
+      enabled: twoFAConfig.enabled || false,
+      secret: twoFAConfig.secret || null,
+      backupCodes: twoFAConfig.backupCodes || [],
+      createdAt: twoFAConfig.createdAt || new Date().toISOString(),
+      enabledAt: twoFAConfig.enabledAt || null,
+    };
+    
+    fs.writeFileSync(TWOFA_FILE, JSON.stringify(config, null, 2));
+    console.log(`Saved issuer 2FA configuration`);
+    return config;
+  } catch (error) {
+    console.error('Error saving 2FA configuration:', error);
+    throw error;
+  }
+}
+
+/**
+ * Enable 2FA for issuer
+ * 
+ * @param {object} secretConfig - Secret configuration from generateSecret
+ * @returns {object} - Updated 2FA configuration
+ */
+function enableIssuer2FA(secretConfig) {
+  const current = getIssuer2FA();
+  
+  return saveIssuer2FA({
+    ...current,
+    enabled: true,
+    secret: secretConfig.secret, // Store only base32 secret (keep ASCII secret secure)
+    backupCodes: secretConfig.backupCodes || [],
+    createdAt: current.createdAt || new Date().toISOString(),
+    enabledAt: new Date().toISOString(),
+  });
+}
+
+/**
+ * Disable 2FA for issuer
+ * 
+ * @returns {object} - Updated 2FA configuration
+ */
+function disableIssuer2FA() {
+  const current = getIssuer2FA();
+  
+  return saveIssuer2FA({
+    enabled: false,
+    secret: null,
+    backupCodes: [],
+    createdAt: current.createdAt,
+    enabledAt: null,
+  });
+}
+
+/**
+ * Update backup codes (e.g., after using one)
+ * 
+ * @param {Array<string>} backupCodes - Updated backup codes array
+ * @returns {object} - Updated 2FA configuration
+ */
+function updateBackupCodes(backupCodes) {
+  const current = getIssuer2FA();
+  
+  return saveIssuer2FA({
+    ...current,
+    backupCodes: backupCodes || [],
+  });
+}
+
 module.exports = {
   saveCredential,
   getCredentialById,
@@ -245,5 +369,10 @@ module.exports = {
   markRevoked,
   getRevocationStatus,
   readCredentials, // Export for testing
+  getIssuer2FA,
+  saveIssuer2FA,
+  enableIssuer2FA,
+  disableIssuer2FA,
+  updateBackupCodes,
 };
 

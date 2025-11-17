@@ -22,6 +22,7 @@ const receiveRoutes = require('./routes/receive');
 const presentRoutes = require('./routes/present');
 const verifyRoutes = require('./routes/verify');
 const revokeRoutes = require('./routes/revoke');
+const twoFARoutes = require('./routes/twoFA');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -50,6 +51,7 @@ app.use('/present', presentRoutes);
 app.use('/verify', verifyRoutes);
 app.use('/revoke', revokeRoutes);
 app.use('/status', revokeRoutes);
+app.use('/2fa', twoFARoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -84,6 +86,12 @@ async function startServer() {
       console.log(`   POST   /verify`);
       console.log(`   POST   /revoke`);
       console.log(`   GET    /status/:credentialId`);
+      console.log(`   GET    /2fa/status`);
+      console.log(`   POST   /2fa/setup`);
+      console.log(`   POST   /2fa/enable`);
+      console.log(`   POST   /2fa/verify`);
+      console.log(`   POST   /2fa/disable`);
+      console.log(`   POST   /2fa/backup-codes`);
       console.log(`   GET    /health`);
     });
   } catch (error) {

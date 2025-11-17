@@ -4,11 +4,13 @@ import Sidebar from './components/Sidebar'
 import StudentTable from './components/StudentTable'
 import IssueCredentialModal from './components/IssueCredentialModal'
 import IssuedCredentialsView from './components/IssuedCredentialsView'
+import RevokedCredentialsView from './components/RevokedCredentialsView'
 import CredentialDetailModal from './components/CredentialDetailModal'
 import KeyManagementModal from './components/KeyManagementModal'
 import RevokeModal from './components/RevokeModal'
 import BulkUploadScreen from './components/BulkUploadScreen'
 import AuditLogPage from './components/AuditLogPage'
+import TwoFASetup from './components/TwoFASetup'
 import './issuerApp.css'
 
 // Local storage key for credentials
@@ -241,8 +243,17 @@ export default function IssuerApp() {
   }
 
   const handleRevokeComplete = (credential, txHash) => {
+    const now = new Date().toISOString()
     const updatedCredentials = credentials.map((c) =>
-      c.id === credential.id ? { ...c, revoked: true, txHash } : c
+      c.id === credential.id 
+        ? { 
+            ...c, 
+            revoked: true, 
+            revokedAt: now,
+            revocationReason: 'Revoked via issuer portal',
+            txHash: txHash || c.txHash // Preserve existing txHash if new one not provided
+          } 
+        : c
     )
     setCredentials(updatedCredentials)
     setStats({ ...stats, revoked: stats.revoked + 1, active: stats.active - 1 })
@@ -254,29 +265,54 @@ export default function IssuerApp() {
     const subject = credential.credentialSubject || {}
     setAuditLogs([
       {
-        timestamp: new Date().toISOString(),
+        timestamp: now,
         action: 'revoke',
         user: issuerName,
         credentialId: credential.id,
         details: `Revoked credential for ${subject.name || 'student'}`,
-        txHash: txHash,
+        txHash: txHash || 'confirmed',
       },
       ...auditLogs,
     ])
     
     setShowRevokeModal(false)
     setShowCredentialModal(false)
+    
+    // Force a re-render to update the revoked credentials view
+    console.log('✅ Credential revoked:', credential.id)
   }
 
   const handleUnrevoke = (credential) => {
     const updatedCredentials = credentials.map((c) =>
-      c.id === credential.id ? { ...c, revoked: false } : c
+      c.id === credential.id 
+        ? { 
+            ...c, 
+            revoked: false,
+            revokedAt: undefined,
+            revocationReason: undefined
+          } 
+        : c
     )
     setCredentials(updatedCredentials)
     setStats({ ...stats, revoked: stats.revoked - 1, active: stats.active + 1 })
     
     // Update localStorage
     saveCredentialsToStorage(updatedCredentials)
+    
+    // Add audit log entry
+    const subject = credential.credentialSubject || {}
+    setAuditLogs([
+      {
+        timestamp: new Date().toISOString(),
+        action: 'unrevoke',
+        user: issuerName,
+        credentialId: credential.id,
+        details: `Unrevoked credential for ${subject.name || 'student'}`,
+      },
+      ...auditLogs,
+    ])
+    
+    console.log('✅ Credential unrevoked:', credential.id)
   }
 
   const handleRotateKeys = async () => {
@@ -315,10 +351,11 @@ export default function IssuerApp() {
         )
       case 'revoke':
         return (
-          <div className="revoke-view">
-            <h2>Revoke Credential</h2>
-            <p>Select a credential from the Issued Credentials tab to revoke it.</p>
-          </div>
+          <RevokedCredentialsView
+            credentials={credentials}
+            onView={handleViewCredential}
+            onUnrevoke={handleUnrevoke}
+          />
         )
       case 'did':
         return (
@@ -334,8 +371,7 @@ export default function IssuerApp() {
       case 'settings':
         return (
           <div className="settings-view">
-            <h2>Settings</h2>
-            <p>Settings configuration coming soon...</p>
+            <TwoFASetup />
           </div>
         )
       case 'bulk':
